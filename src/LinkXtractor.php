@@ -18,18 +18,18 @@ class LinkXtractor {
         return file_get_contents($this->url);
     }
     
-    public function getLinks($page) {
+    public function getLinks() {
         $links = [];
-        preg_match_all('/<a\s+.*?href=[\"\']?([^\"\' >]*)[\"\']?[^>]*>(.*?)<\/a>/i', $page, $matches, PREG_SET_ORDER);
-        foreach ($matches as $link) {
-            array_push($links, $link);
+        preg_match_all('/<a\s+.*?href=[\"\']?([^\"\' >]*)[\"\']?[^>]*>(.*?)<\/a>/i', $this->getPage(), $matches, PREG_SET_ORDER);
+        foreach($matches as $match) {
+            array_push($links, [$match[1],$match[2]]);
         }
         return $links;
     }
     
     public function getResults() {
-        return array_map($this->getLinks(), function($link) {
-            return urldecode($link);
-        });
+        return array_map(function($link) {
+            return [urldecode($link[0]), $link[1]];
+        }, $this->getLinks());
     }
 }
